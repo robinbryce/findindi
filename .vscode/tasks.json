@@ -1,0 +1,30 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "Compile in clang:latest",
+            "type": "shell",
+            "command": "/Users/puk/projects/findindirect/compile.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "focus": true,
+                "panel": "shared"
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": ["absolute"],
+                "pattern": {"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$"}
+                //"file": 1,
+                //"line": 2,
+                //"column": 3,
+                //"severity": "error",
+                //"message": 5
+            }
+        }
+    ]
+}
