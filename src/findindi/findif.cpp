@@ -12,6 +12,7 @@
 
 using namespace clang;
 
+
 class FindIndirectCallVisitor : public RecursiveASTVisitor<FindIndirectCallVisitor> {
     public:
     explicit FindIndirectCallVisitor(ASTContext *context) : m_context(context) {}

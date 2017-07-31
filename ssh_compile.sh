@@ -1,7 +1,7 @@
 #!/bin/bash
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-sudo docker run --rm -it \
+ssh root@localhost /usr/local/bin/docker run --rm \
     -v $scriptdir/src:$scriptdir/src \
     -v $scriptdir/workspace:$scriptdir/workspace \
-    -w $scriptdir/workspace \
-    clang:latest ./genbuild.sh
+    -w $scriptdir/workspace/build \
+    clang:latest make

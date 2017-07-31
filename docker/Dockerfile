@@ -34,4 +34,8 @@ RUN  apt-get install -y \
     python-lldb-4.0 \
     cmake && \
     ln -s /usr/bin/clang-4.0 /usr/bin/clang && \
-    ln -s /usr/bin/clang++-4.0 /usr/bin/clang++
+    ln -s /usr/bin/clang++-4.0 /usr/bin/clang++ && \
+    ln -s /usr/bin/lldb-server-4.0 /usr/bin/lldb-server
+
+# For lldb-server
+EXPOSE 3000

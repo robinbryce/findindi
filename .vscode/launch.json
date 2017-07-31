@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(lldb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/workspace/build/findindi/findif",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceRoot}/workspace",
+            "environment": [],
+            "externalConsole": true,
+            "osx": {
+                "miMode": "lldb"
+                //, "miDebuggerPath": "${workspaceRoot}/lldb-local.sh"
+                //, "miDebuggerServerAddress": "localhost:3000"
+            }
+        }
+    ]
+}
