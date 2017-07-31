@@ -2,11 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(lldb) Launch",
+            "name": "Remote Debug",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/workspace/build/findindi/findif",
-            "args": [],
+            // Can't get args to work with remote debugging and gdb
+            "args": ["namespace n { namespace m { class C {}; } }"],
             "stopAtEntry": true,
             "cwd": "${workspaceRoot}/workspace",
             "environment": [],
@@ -15,7 +16,16 @@
                 "miMode": "lldb"
                 //, "miDebuggerPath": "${workspaceRoot}/lldb-local.sh"
                 //, "miDebuggerServerAddress": "localhost:3000"
+            },
+            "linux": {
+                "miMode": "gdb"
+                //, "MIDebuggerPath": "${workspaceRoot}/lldb-local.sh"
+                //, "MIDebuggerPath": "${workspaceRoot}/gdb-launch.sh"
+                , "MIDebuggerServerAddress": "localhost:3000"
+                // Can't get args to work with remote debugging and gdb
+                //, "args": ["namespace n { namespace m { class C {}; } }"]
             }
+
         }
     ]
 }

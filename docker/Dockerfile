@@ -24,6 +24,7 @@ RUN  apt-get install -y \
     libclang-common-4.0-dev \
     libclang1-4.0 \
     lldb-4.0 \
+    gdbserver \
     clang-4.0-doc \
     clang-4.0-examples \
     clang-format-4.0 \

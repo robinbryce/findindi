@@ -6,7 +6,7 @@
         {
             "taskName": "Compile in clang:latest",
             "type": "shell",
-            "command": "/Users/puk/projects/findindirect/ssh_compile.sh",
+            "command": "${workspaceRoot}/compile.sh",
             "group": {
                 "kind": "build",
                 "isDefault": true

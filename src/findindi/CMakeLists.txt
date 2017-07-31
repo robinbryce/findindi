@@ -24,6 +24,7 @@ target_link_libraries (findif
     clangRewriteFrontend
     clangEdit
     clangAST
+    clangASTMatchers
     clangLex
     clangBasic
     )
