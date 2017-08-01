@@ -4,17 +4,14 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # With --security-opt seccomp:unconfined I can docker exec in and use lldb
 # to "remote debug" with this lldb-server. It wasn't enough to fix it from the
 # host.
-
-ESCALATE=$(which really)
-if [ "" = "$ESCALATE" ]; then
-    ESCALATE="sudo"
-fi
+source $scriptdir/sharedfuncs.sh
+escalate="$(choose_privilege_escalate)"
 
 source $scriptdir/include_spec.sh
 
 DOCKER=$(which docker)
 #ssh -t root@localhost ${DOCKER} run --rm -it \
-$ESCALATE $DOCKER run --rm -it \
+$escalate $DOCKER run --rm -it \
     --security-opt seccomp:unconfined \
     -p 127.0.0.1:3000:3000 \
     $EXTRA_VOLUMES \

@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/workspace/build/findindi/findif",
             // Can't get args to work with remote debugging and gdb
-            "args": ["namespace n { namespace m { class C {}; } }"],
+            "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceRoot}/workspace",
             "environment": [],
@@ -23,7 +23,9 @@
                 //, "MIDebuggerPath": "${workspaceRoot}/gdb-launch.sh"
                 , "MIDebuggerServerAddress": "localhost:3000"
                 // Can't get args to work with remote debugging and gdb
-                //, "args": ["namespace n { namespace m { class C {}; } }"]
+                // So args are passed in the gdb-listen.sh script which is currently launched by
+                // hand prior to debugging
+                //, "args": []
             }
 
         }

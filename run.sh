@@ -6,11 +6,9 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # host
 source $scriptdir/include_spec.sh
 source $scriptdir/volumes.sh
+source $scriptdir/sharedfuncs.sh
 
-ESCALATE=$(which really)
-if [ "" = "$ESCALATE" ]; then
-    ESCALATE="sudo"
-fi
+ESCALATE="$(choose_privilege_escalate)"
 
 #clang-check-4.0 module/src/firmware/smartcard.c -ast-dump -- 
 
