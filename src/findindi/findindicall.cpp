@@ -15,56 +15,79 @@
 using namespace clang;
 using namespace clang::ast_matchers;
 
-
-class FindIndirectCallVisitor : public RecursiveASTVisitor<FindIndirectCallVisitor> {
-    public:
-    explicit FindIndirectCallVisitor(ASTContext *context) : m_context(context) {}
-    bool VisitCallExpr(CallExpr *expr){
-        FullSourceLoc loc = m_context->getFullLoc(expr->getLocStart());
-        if (loc.isValid())
-            llvm::outs()    << "Found function call at "
-                            << loc.getSpellingLineNumber() << ":"
-                            << loc.getSpellingColumnNumber() << "\n";
-        return true;
-    }
-    private:
-    ASTContext *m_context;
-};
-
-class FindIndirectCallConsumer : public clang::ASTConsumer {
-    public:
-    explicit FindIndirectCallConsumer(ASTContext *context) : m_visitor(context) {}
-    virtual void HandleTranslationUnit(clang::ASTContext &context) {
-        m_visitor.TraverseDecl(context.getTranslationUnitDecl());
-    }
-    private:
-    FindIndirectCallVisitor m_visitor;
-};
-
-class FindIndirectCallAction : public clang::ASTFrontendAction {
-    public:
-    virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
-        clang::CompilerInstance &compiler, llvm::StringRef in_file) {
-            return std::unique_ptr<clang::ASTConsumer>(
-                new FindIndirectCallConsumer(&compiler.getASTContext())
-            );
-        }
-};
-
 static llvm::cl::OptionCategory ToolCategory("finder options");
 
 struct CallExprHandler : public MatchFinder::MatchCallback {
+
+    const DeclRefExpr *get_fp_variable_call(const CallExpr *expr){
+        // This gets the DeclRefExpr for function pointers which are 
+        // available directly on the stack, but not those which are accessed via
+        // structure members.
+        const ImplicitCastExpr *ice = dyn_cast<ImplicitCastExpr>(expr->getCallee());
+        if (!ice)
+            return 0;
+        return dyn_cast<DeclRefExpr>(ice->getSubExpr());
+    }
+
     virtual void run(const MatchFinder::MatchResult &result) {
 
-        const CallExpr *expr = result.Nodes.getNodeAs<CallExpr>("callExpr");
+        ASTContext *context = result.Context;
+
+        const Expr *expr = nullptr;
+        const CallExpr *callexpr = result.Nodes.getNodeAs<CallExpr>("callExpr");
+        if (!callexpr)
+            return;
+        //node = get_fp_variable_call(expr);
+        const ImplicitCastExpr *ice = dyn_cast<ImplicitCastExpr>(callexpr->getCallee());
+        if (!ice)
+            return;
+        const DeclRefExpr *dre = dyn_cast<DeclRefExpr>(ice->getSubExpr());
+        if (dre) {
+            // function pointer held directly on stack var, no dereferening.
+            llvm::outs() << "Function ptr as parameter ? ";
+            expr = dre;
+        } else {
+
+            while (ice) {
+
+                const Expr *ex = nullptr;
+                const MemberExpr *me = nullptr;
+                const DeclRefExpr *de = nullptr;
+
+                ex = ice->getSubExpr();
+                if (!ex) {
+                    break;
+                }
+                me = dyn_cast<MemberExpr>(ex);
+                if (!me) {
+                    de = dyn_cast<DeclRefExpr>(ex);
+                    de->dump();
+                    expr = de;
+                    break;
+                }
+
+                const DeclarationNameInfo dni = me->getMemberNameInfo();
+                llvm::outs() << "MemberName(" << dni.getAsString() << "); ";
+                llvm::outs() << "MemberType(" << me->getMemberDecl()->getType().getAsString() << "); ";
+                ice = dyn_cast<ImplicitCastExpr>(me->getBase());
+            }
+        }
+
         if (expr) {
-            ASTContext *context = result.Context;
+
             FullSourceLoc loc = context->getFullLoc(expr->getLocStart());
             if (loc.isValid()) {
-                const Expr *next = expr->IgnoreImplicit();
-                next->dumpPretty(*context); // same as getCallee ?
-                llvm::outs() << "; " << next->getType().getAsString() << "\n";
+                expr->dumpPretty(*context); // same as getCallee ?
+                // expr->dump(); // same as getCallee ?
+                llvm::outs() << "; " << loc.getSpellingLineNumber() << ":"
+                             << loc.getSpellingColumnNumber() << "\n";
 
+            }
+        }
+    }
+};
+
+/*
                 if (false){
                 const Expr *callee = expr->getCallee();
                 QualType q = expr->getType(); // return type
@@ -72,25 +95,27 @@ struct CallExprHandler : public MatchFinder::MatchCallback {
                 if (callee) {
                     callee->dumpPretty(*context);
                     llvm::outs() << "; "
-                                // gets the type of the function pointer, which is just it's signature.
-                                //<< callee->getType().getAsString() << "; "
                                 << loc.getSpellingLineNumber() << ":"
                                 << loc.getSpellingColumnNumber() << "\n";
                     callee->dump();
                 }
                 }
-                    //llvm::outs() << "; " <<  callee->
+
+
+                // gets the type of the function pointer, which is just it's signature.
+                //<< callee->getType().getAsString() << "; "
+
+                //llvm::outs() << "; " << next->getType().getAsString() << "\n";
+
+                //llvm::outs() << "; " <<  callee->
                 //llvm::outs()    << "; " << q.getAsString() << "; "
                 //                << "; "
                 //                << loc.getSpellingLineNumber() << ":"
                 //                << loc.getSpellingColumnNumber() << "\n";
                 ////expr->printPretty(llvm::outs());
                 //expr->dump();
-                llvm::outs() << "\n";
-            }
-        }
-    }
-};
+
+*/
 
 int main(int argc, const char **argv) {
     tooling::CommonOptionsParser op(argc, argv, ToolCategory);
