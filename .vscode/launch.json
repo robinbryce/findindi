@@ -3,9 +3,10 @@
     "configurations": [
         {
             "name": "Remote Debug",
+            "preLaunchTask": "Launch gdb-server",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/workspace/build/findindi/findif",
+            "program": "${workspaceRoot}/workspace/build/findindi/findindicall",
             // Can't get args to work with remote debugging and gdb
             "args": [],
             "stopAtEntry": true,

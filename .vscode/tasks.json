@@ -25,6 +25,17 @@
                 //"severity": "error",
                 //"message": 5
             }
+        },
+        {
+            "taskName": "Launch gdb-server",
+            "type": "shell",
+            "command": "${workspaceRoot}/gdb-listen.sh ${workspaceRoot}/workspace/build/findindi/findindicall module/src/firmware/smartcard.c",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated"
+            } 
         }
     ]
 }

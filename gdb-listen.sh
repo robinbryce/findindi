@@ -5,20 +5,23 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # to "remote debug" with this lldb-server. It wasn't enough to fix it from the
 # host.
 source $scriptdir/sharedfuncs.sh
+source $scriptdir/volumes.sh
 escalate="$(choose_privilege_escalate)"
 
-source $scriptdir/include_spec.sh
+TARGET=$scriptdir/workspace/build/findindi/findindicall
 
 DOCKER=$(which docker)
 #ssh -t root@localhost ${DOCKER} run --rm -it \
 $escalate $DOCKER run --rm -it \
     --security-opt seccomp:unconfined \
     -p 127.0.0.1:3000:3000 \
-    $EXTRA_VOLUMES \
-    -v $scriptdir/src:$scriptdir/src \
-    -v $scriptdir/workspace:$scriptdir/workspace \
-    -w $scriptdir/workspace/build \
+    -v /projects/nshield-main:/projects/nshield-main \
+    -v /projects/nshield-build:/projects/nshield-build \
+    -v $scriptdir/src:$scriptdir/workspace/src \
+    -v $scriptdir/workspace/scripts:$scriptdir/workspace/scripts \
+    -v $scriptdir/workspace/build:$scriptdir/workspace/build \
+    -w /projects/nshield-main \
     clang:latest \
-    /usr/bin/gdbserver ":3000" findindi/findif /workspace/module/src/firmware/smartcard.c -- "$INCLUDE_SPEC"
-
+    /usr/bin/gdbserver ":3000" "$@"
+    #/usr/bin/gdbserver ":3000" $TARGET module/src/firmware/smartcard.c
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $scriptdir/../workspace
 rm -rf build && mkdir build
 cd build
 cmake \
